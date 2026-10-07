@@ -6828,7 +6828,7 @@ window.DraftCalcCloudSync = (function() {
             </div>
             <div style="background: var(--card-bg); padding: 10px; border-radius: 8px; border: 1px solid var(--border-color);">
               <div style="font-size: 0.68rem; color: var(--text-muted); font-weight: 600;">Target Database</div>
-              <div style="font-size: 0.85rem; font-weight: 800; color: #10b981; margin-top: 2px;">Solapur &amp; Master DBS</div>
+              <div style="font-size: 0.85rem; font-weight: 800; color: #10b981; margin-top: 2px;">Kolhapur &amp; Master DBS</div>
             </div>
           </div>
         </div>
@@ -7266,8 +7266,8 @@ window.DraftCalcCloudSync = (function() {
           <button type="button" class="btn-sm" onclick="centerMapOnCurrentGps()" style="background: var(--card-subtle); border: 1.5px solid var(--border-color); color: var(--text-main); padding: 11px 14px; font-weight: 700; display: flex; align-items: center; gap: 5px;">
             <span>🎯</span> GPS
           </button>
-          <button type="button" class="btn-sm" onclick="centerMapOnSolapur()" style="background: var(--card-subtle); border: 1.5px solid var(--border-color); color: var(--text-main); padding: 11px 14px; font-weight: 700; display: flex; align-items: center; gap: 5px;">
-            <span>🏛️</span> Solapur
+          <button type="button" class="btn-sm" onclick="centerMapOnKolhapur()" style="background: var(--card-subtle); border: 1.5px solid var(--border-color); color: var(--text-main); padding: 11px 14px; font-weight: 700; display: flex; align-items: center; gap: 5px;">
+            <span>🏛️</span> Kolhapur
           </button>
           <button type="button" id="btnApplyMapLocation" class="btn-tactile btn-save" onclick="applyMapPickerLocation()" style="flex: 2; min-width: 180px; padding: 12px; font-weight: 800; display: flex; align-items: center; justify-content: center; gap: 6px; font-size: 0.95rem;">
             <span>✅</span> Apply Location & Auto-Fill Form
@@ -7601,8 +7601,29 @@ window.DraftCalcCloudSync = (function() {
       }
     } catch(e) {}
 
-    let SHEET2_FULL_DATABASE = sortVillageDatabase(JSON.parse(localStorage.getItem('HYDROGEO_VILLAGE_DB_KOP')) || window.INBUILT_VILLAGES_KOLHAPUR || {
-      "Akkalkot": [["Akkalkot Rural", "Akkalkot GP", "562839", "BM-133", "56 C/2", "", "", "", "Solapur"]]
+    // Strict Kolhapur district enforcement & stale Solapur cache sanitization
+    localStorage.setItem('HYDROGEO_ACTIVE_DISTRICT', 'D2');
+    try {
+      const existingRecsRaw = localStorage.getItem('HYDROGEO_SURVEY_RECORDS_KOP');
+      if (existingRecsRaw) {
+        const parsedRecs = JSON.parse(existingRecsRaw);
+        if (Array.isArray(parsedRecs)) {
+          const kopTalukasLower = ['ajra', 'bavda', 'gaganbavda', 'bhudargad', 'chandgad', 'gadhinglaj', 'hatkanangle', 'kagal', 'karvir', 'panhala', 'radhanagari', 'shahuwadi', 'shirol', 'kolhapur'];
+          const cleanedRecs = parsedRecs.filter(r => {
+            const rd = (r.district || '').trim().toLowerCase();
+            const rt = (r.taluka || '').trim().toLowerCase();
+            if (rd === 'solapur' || rt === 'akkalkot') return false;
+            return rd === 'kolhapur' || kopTalukasLower.includes(rt);
+          });
+          if (cleanedRecs.length !== parsedRecs.length) {
+            localStorage.setItem('HYDROGEO_SURVEY_RECORDS_KOP', JSON.stringify(cleanedRecs));
+          }
+        }
+      }
+    } catch(e) {}
+
+    let SHEET2_FULL_DATABASE = sortVillageDatabase(window.INBUILT_VILLAGES_KOLHAPUR || JSON.parse(localStorage.getItem('HYDROGEO_VILLAGE_DB_KOP')) || {
+      "Karvir": [["Kolhapur", "Kolhapur Municipal Corp", "567400", "KR-52", "47 L/3", "16 42 18", "74 14 36", "", "Kolhapur"]]
     });
 
     const STORAGE_KEY = 'HYDROGEO_SURVEY_RECORDS_KOP';
@@ -8171,23 +8192,23 @@ window.DraftCalcCloudSync = (function() {
     // DEFAULT SURVEY RECORDS (Sourced from Well_Data_Export.xlsx)
     const DEFAULT_SURVEY_RECORDS = [
   {
-    "srNo": "VN-001",
-    "surveyDate": "2026-09-02",
-    "surveyTime": "11:17",
-    "geologistName": "VN Nimbalkar",
-    "wellSeqNo": "2",
+    "srNo": "SN-001",
+    "surveyDate": "2026-10-07",
+    "surveyTime": "11:00",
+    "geologistName": "Shashikant Nimbalkar",
+    "wellSeqNo": "1",
     "wellType": "Dug Well",
-    "ownerName": "Ab",
-    "district": "Solapur",
-    "taluka": "Akkalkot",
-    "gpName": "Kajikanbus",
-    "village": "Kajikanbus",
-    "censusNo": "562855",
-    "sheet10k": "56 C/6",
-    "watershedNo": "BM-129 (1/3)",
-    "gpsCoords": "17.669648, 75.906565",
-    "altitudeGL": "471",
-    "gatNo": "36",
+    "ownerName": "Sample Farmer",
+    "district": "Kolhapur",
+    "taluka": "Karvir",
+    "gpName": "Karvir",
+    "village": "Kolhapur",
+    "censusNo": "567400",
+    "sheet10k": "47 L/3",
+    "watershedNo": "KR-52",
+    "gpsCoords": "16.705000, 74.243300",
+    "altitudeGL": "550",
+    "gatNo": "101",
     "mpLocation": "Due North",
     "parapetHeight": "1",
     "diaTop": "10",
@@ -8198,220 +8219,23 @@ window.DraftCalcCloudSync = (function() {
     "powerMode": "Electric",
     "pumpHP": "5",
     "reservoirType": "None",
-    "kharifCrop1": "Cotton",
+    "kharifCrop1": "Sugarcane",
     "kharifCrop2": "Soybean",
     "rabiCrop1": "Wheat",
     "rabiCrop2": "Gram",
-    "lithoType1": "Black Cotton Soil",
-    "lithoDepth1": "1.0",
-    "lithoType2": "Highly Weathered Basalt",
-    "lithoDepth2": "5.0",
+    "lithoType1": "Laterite",
+    "lithoDepth1": "2.0",
+    "lithoType2": "Weathered Laterite",
+    "lithoDepth2": "6.0",
     "lithoType3": "Moderately Weathered Basalt",
-    "lithoDepth3": "7.0",
+    "lithoDepth3": "10.0",
     "lithoType4": "Fractured/ Jointed  Basalt",
-    "lithoDepth4": "10.0",
+    "lithoDepth4": "14.0",
     "lithoType5": "Massive Basalt",
     "lithoDepth5": "Bottom",
     "nearestWell": "No",
     "wellStatus": "Perennial well",
     "surveyCategory": "Irrigation"
-  },
-  {
-    "srNo": "VN-002",
-    "surveyDate": "2026-09-03",
-    "surveyTime": "10:24",
-    "geologistName": "VN Nimbalkar",
-    "mapSheetNo": "E43Q2",
-    "wellSeqNo": "1",
-    "wellType": "Dug Well",
-    "ownerName": "varad",
-    "district": "Solapur",
-    "taluka": "Akkalkot",
-    "gpName": "Kini",
-    "village": "Kini",
-    "censusNo": "562857",
-    "sheet10k": "56 C/6",
-    "watershedNo": "BM-129 (1/3)",
-    "gpsCoords": "17.669668, 75.906581",
-    "altitudeGL": "471",
-    "gatNo": "32",
-    "mpLocation": "Due East",
-    "parapetHeight": "1",
-    "diaTop": "10",
-    "diaEffective": "8",
-    "depthWell": "20",
-    "depthLining": "6",
-    "liningMaterial": "Stone",
-    "yearConstruction": "1985",
-    "dwl": "5",
-    "swlWinter": "3",
-    "swlSummer": "16",
-    "pumpType": "Submersible",
-    "powerMode": "Electric",
-    "pumpHP": "5",
-    "pumpDurationWinter": "7",
-    "pumpDurationSummer": "2",
-    "recupWinter": "18",
-    "recupSummer": "25",
-    "reservoirType": "PT",
-    "reservoirDistDir": "250m",
-    "cultivableLand": "3",
-    "kharifCrop1": "Cotton",
-    "kharifCrop2": "Soybean",
-    "kharifCrop3": "Maze",
-    "kharifFloodHa1": "0.5",
-    "kharifFloodHa2": "0.5",
-    "kharifFloodHa3": "0.5",
-    "rabiCrop1": "Wheat",
-    "rabiCrop2": "Gram",
-    "rabiCrop3": "Tur",
-    "rabiFloodHa2": "0.5",
-    "rabiFloodHa3": "0.5",
-    "rabiDripHa1": "0.3",
-    "perennialCrop1": "Sugarcane",
-    "perennialCrop2": "Greps",
-    "perennialDripHa1": "0.5",
-    "perennialDripHa2": ".5",
-    "summerCrop1": "Vegetables",
-    "summerCrop2": "Maze",
-    "summerFloodHa1": "0.3",
-    "summerFloodHa2": "0.2",
-    "lithoType1": "Black Cotton Soil",
-    "lithoDepth1": "1.0",
-    "lithoType2": "Highly Weathered Basalt",
-    "lithoDepth2": "5.0",
-    "lithoType3": "Moderately Weathered Basalt",
-    "lithoDepth3": "7.0",
-    "lithoType4": "Fractured/ Jointed  Basalt",
-    "lithoDepth4": "10.0",
-    "lithoType5": "Massive Basalt",
-    "lithoDepth5": "Bottom",
-    "nearestWell": "No",
-    "remarks": "Near pt",
-    "wellStatus": "Perennial well",
-    "surveyCategory": "Irrigation"
-  },
-  {
-    "srNo": "VN-003",
-    "surveyDate": "2026-09-03",
-    "surveyTime": "10:34",
-    "geologistName": "VN Nimbalkar",
-    "mapSheetNo": "E43Q2",
-    "wellSeqNo": "2",
-    "wellType": "Dug Well",
-    "ownerName": "PWS sangvi",
-    "district": "Solapur",
-    "taluka": "Akkalkot",
-    "gpName": "Sangavi Bk",
-    "village": "Sangavi Bk",
-    "censusNo": "562837",
-    "sheet10k": "56 C/2",
-    "watershedNo": "BM-129 (3/3)",
-    "population": "1000",
-    "gpsCoords": "17.669629, 75.906588",
-    "altitudeGL": "471",
-    "gatNo": "45",
-    "quadrantNo": "3",
-    "mpLocation": "Due North",
-    "parapetHeight": "2",
-    "diaTop": "10",
-    "diaEffective": "9",
-    "depthWell": "18",
-    "depthLining": "8",
-    "liningMaterial": "Stone",
-    "yearConstruction": "2000",
-    "dwl": "6",
-    "swlWinter": "3.5",
-    "swlSummer": "16",
-    "pumpType": "Submersible",
-    "powerMode": "Electric",
-    "pumpHP": "7",
-    "pumpDurationWinter": "8",
-    "pumpDurationSummer": "5",
-    "recupWinter": "18",
-    "reservoirType": "PT",
-    "reservoirDistDir": "100m",
-    "kharifCrop1": "Cotton",
-    "kharifCrop2": "Soybean",
-    "rabiCrop1": "Wheat",
-    "rabiCrop2": "Gram",
-    "perennialCrop1": "None",
-    "summerCrop1": "None",
-    "lithoType1": "Black Cotton Soil",
-    "lithoDepth1": "1.0",
-    "lithoType2": "Highly Weathered Basalt",
-    "lithoDepth2": "5.0",
-    "lithoType3": "Moderately Weathered Basalt",
-    "lithoDepth3": "7.0",
-    "lithoType4": "Fractured/ Jointed  Basalt",
-    "lithoDepth4": "10.0",
-    "lithoType5": "Massive Basalt",
-    "lithoDepth5": "Bottom",
-    "nearestWell": "No",
-    "wellStatus": "Perennial well",
-    "surveyCategory": "PWS"
-  },
-  {
-    "srNo": "VN-004",
-    "surveyDate": "2026-09-03",
-    "surveyTime": "10:50",
-    "geologistName": "VN Nimbalkar",
-    "mapSheetNo": "E43Q2",
-    "wellSeqNo": "3",
-    "wellType": "Dug Well",
-    "ownerName": "PWS Safale",
-    "district": "Solapur",
-    "taluka": "Akkalkot",
-    "gpName": "Safale",
-    "village": "Safale",
-    "censusNo": "562881",
-    "sheet10k": "56 C/6",
-    "watershedNo": "BM-134 (1/5)",
-    "population": "1200",
-    "gpsCoords": "17.669645, 75.906585",
-    "altitudeGL": "471",
-    "gatNo": "85",
-    "quadrantNo": "D4",
-    "mpLocation": "Due North",
-    "parapetHeight": "2",
-    "diaTop": "10",
-    "diaEffective": "8",
-    "depthWell": "18",
-    "depthLining": "6",
-    "liningMaterial": "Stone",
-    "yearConstruction": "2001",
-    "dwl": "6",
-    "swlWinter": "3",
-    "swlSummer": "15",
-    "pumpType": "Submersible",
-    "powerMode": "Electric",
-    "pumpHP": "5",
-    "pumpDurationWinter": "6",
-    "pumpDurationSummer": "5",
-    "recupWinter": "18",
-    "recupSummer": "25",
-    "reservoirType": "PT",
-    "reservoirDistDir": "200m",
-    "kharifCrop1": "Cotton",
-    "kharifCrop2": "Soybean",
-    "rabiCrop1": "Wheat",
-    "rabiCrop2": "Gram",
-    "perennialCrop1": "None",
-    "summerCrop1": "None",
-    "lithoType1": "Black Cotton Soil",
-    "lithoDepth1": "1.0",
-    "lithoType2": "Highly Weathered Basalt",
-    "lithoDepth2": "5.0",
-    "lithoType3": "Moderately Weathered Basalt",
-    "lithoDepth3": "7.0",
-    "lithoType4": "Fractured/ Jointed  Basalt",
-    "lithoDepth4": "10.0",
-    "lithoType5": "Massive Basalt",
-    "lithoDepth5": "Bottom",
-    "nearestWell": "No",
-    "remarks": "near pt",
-    "wellStatus": "Perennial well",
-    "surveyCategory": "PWS"
   }
 ];
 
@@ -8861,7 +8685,7 @@ window.DraftCalcCloudSync = (function() {
     }
 
     async function switchActiveDistrict(code, isSilent) {
-      if (code !== 'D1' && code !== 'D2' && code !== 'D3' && code !== 'SLP' && code !== 'KOP' && code !== 'LTR') code = 'D1';
+      if (code !== 'D1' && code !== 'D2' && code !== 'D3' && code !== 'SLP' && code !== 'KOP' && code !== 'LTR') code = 'D2';
       localStorage.setItem('HYDROGEO_ACTIVE_DISTRICT', code);
       const isD1 = (code === 'D1' || code === 'SLP');
       const isD2 = (code === 'D2' || code === 'KOP');
@@ -8886,7 +8710,7 @@ window.DraftCalcCloudSync = (function() {
       }
 
       // 2. Load Inbuilt Village Database
-      let targetVillages = window.INBUILT_VILLAGES_SOLAPUR || window.INBUILT_VILLAGES;
+      let targetVillages = window.INBUILT_VILLAGES_KOLHAPUR || window.INBUILT_VILLAGES;
       if (isD2) targetVillages = window.INBUILT_VILLAGES_KOLHAPUR;
       else if (isD3) targetVillages = window.INBUILT_VILLAGES_LATUR;
 
@@ -9209,7 +9033,7 @@ window.DraftCalcCloudSync = (function() {
 
         const village = (vilM ? vilM[1] : (nameM ? nameM[1] : '')).trim();
         const taluka = (talM ? talM[1] : '').trim();
-        const district = (disM ? disM[1] : '').trim() || 'Solapur';
+        const district = (disM ? disM[1] : '').trim() || 'Kolhapur';
         let census = (cenM ? cenM[1] : '').trim();
         let gp = (gpM ? gpM[1] : village).trim();
         const gat = (gatM ? gatM[1] : '').trim();
@@ -9392,7 +9216,7 @@ window.DraftCalcCloudSync = (function() {
       const warnText = document.getElementById('gpsProximityWarningText');
       if (!warnBox) return;
 
-      const districtName = (document.getElementById('district')?.value || 'Solapur').trim().toLowerCase();
+      const districtName = (document.getElementById('district')?.value || 'Kolhapur').trim().toLowerCase();
       // District Geographic Bounding Boxes and maximum outer radius
       const districtConfigs = {
         'solapur':  { minLat: 17.05, maxLat: 18.45, minLon: 74.65, maxLon: 76.45, centerLat: 17.68, centerLon: 75.60, maxKm: 135 },
@@ -9400,7 +9224,7 @@ window.DraftCalcCloudSync = (function() {
         'latur':    { minLat: 17.80, maxLat: 18.95, minLon: 76.10, maxLon: 77.45, centerLat: 18.40, centerLon: 76.58, maxKm: 110 }
       };
 
-      const cfg = districtConfigs[districtName] || districtConfigs['solapur'];
+      const cfg = districtConfigs[districtName] || districtConfigs['kolhapur'];
       const insideBoundingBox = (lat >= cfg.minLat && lat <= cfg.maxLat && lon >= cfg.minLon && lon <= cfg.maxLon);
 
       let distanceKm = 0;
@@ -9454,7 +9278,7 @@ window.DraftCalcCloudSync = (function() {
       let pdfDistrict = '';
       if (window.ACTIVE_GEOPDF) {
         const pdf = window.ACTIVE_GEOPDF;
-        pdfDistrict = pdf.district || 'Solapur';
+        pdfDistrict = pdf.district || 'Kolhapur';
 
         // Find nearest village label from PDF map (preferring non-taluka village names)
         if (pdf.villageLabels && pdf.villageLabels.length > 0) {
@@ -9493,7 +9317,7 @@ window.DraftCalcCloudSync = (function() {
 
       let matchedTaluka = usePdfVillage ? (pdfTaluka || (matched && matched.t) || '') : ((matched && matched.t) ? matched.t.trim() : (pdfTaluka || ''));
       let matchedVillage = usePdfVillage ? pdfVillage : ((matched && matched.v) ? matched.v.trim() : (pdfVillage || ''));
-      let matchedDistrict = usePdfVillage ? (pdfDistrict || (matched && matched.d) || 'Solapur') : ((matched && matched.d) ? matched.d.trim() : (pdfDistrict || 'Solapur'));
+      let matchedDistrict = usePdfVillage ? (pdfDistrict || (matched && matched.d) || 'Kolhapur') : ((matched && matched.d) ? matched.d.trim() : (pdfDistrict || 'Kolhapur'));
       let matchedCensus = (matched && !usePdfVillage && matched.c) ? matched.c.trim() : '';
 
       if (districtInput) districtInput.value = matchedDistrict;
@@ -9816,7 +9640,7 @@ window.DraftCalcCloudSync = (function() {
             if (d < minD) {
               minD = d;
               best = {
-                d: v[8] || 'Solapur',
+                d: v[8] || 'Kolhapur',
                 t: taluka,
                 v: v[0],
                 c: v[2],
@@ -9950,7 +9774,7 @@ window.DraftCalcCloudSync = (function() {
 
       const matchDesc = matched.isNearest
         ? `📍 Nearest: ${matched.v} (${matched.t}) — ~${matched.distanceKm.toFixed(1)} km`
-        : `📍 KML Auto-Match: ${matched.v} (${matched.t}, ${matched.d || 'Solapur'})`;
+        : `📍 KML Auto-Match: ${matched.v} (${matched.t}, ${matched.d || 'Kolhapur'})`;
 
       if (coordStatus) {
         coordStatus.innerHTML = `<span style="color:var(--success); font-weight:800;">${matchDesc}</span>`;
@@ -10028,8 +9852,8 @@ window.DraftCalcCloudSync = (function() {
       const container = document.getElementById('mapPickerContainer');
       if (!container || typeof L === 'undefined') return;
 
-      let startLat = 17.6599;
-      let startLon = 75.9064;
+      let startLat = 16.7050;
+      let startLon = 74.2433;
       let startZoom = 11;
 
       const currentGps = document.getElementById('gpsCoords')?.value || '';
@@ -10138,8 +9962,8 @@ window.DraftCalcCloudSync = (function() {
         let parts = curCoords.split(',').map(s => parseFloat(s.trim()));
         if (!isNaN(parts[0]) && !isNaN(parts[1]) && parts[0] !== 0 && parts[1] !== 0) {
           if (Math.abs(parts[0] - 18.2352) < 0.05 || Math.abs(parts[0] - 17.690672) < 0.01) {
-            parts[0] = 17.690120055752857;
-            parts[1] = 75.91697250025791;
+            parts[0] = 16.705000;
+            parts[1] = 74.243300;
             const gInp = document.getElementById('gpsCoords');
             if (gInp) gInp.value = `${parts[0].toFixed(6)}, ${parts[1].toFixed(6)}`;
           }
@@ -10160,10 +9984,10 @@ window.DraftCalcCloudSync = (function() {
       }
       if (!navigator.geolocation) {
         if (mapPickerMap) {
-          mapPickerMap.setView([17.690120, 75.916973], 16);
-          onMapClicked(17.690120, 75.916973);
+          mapPickerMap.setView([16.705000, 74.243300], 16);
+          onMapClicked(16.705000, 74.243300);
         }
-        showToast('📍 Centered on GPS: 17.690120, 75.916973');
+        showToast('📍 Centered on Kolhapur: 16.705000, 74.243300');
         return;
       }
       navigator.geolocation.getCurrentPosition(
@@ -10171,8 +9995,8 @@ window.DraftCalcCloudSync = (function() {
           let lat = pos.coords.latitude;
           let lon = pos.coords.longitude;
           if (Math.abs(lat - 18.2352) < 0.05 || Math.abs(lat - 17.690672) < 0.01) {
-            lat = 17.690120055752857;
-            lon = 75.91697250025791;
+            lat = 16.705000;
+            lon = 74.243300;
           }
           if (mapPickerMap) {
             mapPickerMap.setView([lat, lon], 16);
@@ -10182,20 +10006,21 @@ window.DraftCalcCloudSync = (function() {
         },
         (err) => {
           if (mapPickerMap) {
-            mapPickerMap.setView([17.690120, 75.916973], 16);
-            onMapClicked(17.690120, 75.916973);
+            mapPickerMap.setView([16.705000, 74.243300], 16);
+            onMapClicked(16.705000, 74.243300);
           }
-          showToast(`📍 Centered on GPS: 17.690120, 75.916973`);
+          showToast(`📍 Centered on Kolhapur: 16.705000, 74.243300`);
         },
         { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 }
       );
     }
 
-    function centerMapOnSolapur() {
+    function centerMapOnKolhapur() {
       if (mapPickerMap) {
-        mapPickerMap.setView([17.6599, 75.9064], 11);
+        mapPickerMap.setView([16.7050, 74.2433], 11);
       }
     }
+    window.centerMapOnSolapur = centerMapOnKolhapur;
 
     // ==========================================
     // GEOPDF MAP VIEWER & SPATIAL GAT RESOLVER (WITH KML BOUNDARIES & MAP PICKER)
@@ -10373,8 +10198,8 @@ window.DraftCalcCloudSync = (function() {
         });
 
         // Set initial view
-        let startLat = 17.6599;
-        let startLon = 75.9064;
+        let startLat = 16.7050;
+        let startLon = 74.2433;
         let startZoom = 11;
         const curCoords = document.getElementById('gpsCoords')?.value || '';
         if (curCoords.includes(',')) {
@@ -11347,7 +11172,7 @@ window.DraftCalcCloudSync = (function() {
         canvasWidth: canvas.width,
         canvasHeight: canvas.height,
         gatList: gatList,
-        district: detectedDistrict || 'Solapur',
+        district: detectedDistrict || 'Kolhapur',
         talukas: Array.from(detectedTalukas),
         villageLabels: villageLabels,
         wellPoints: wellPoints
@@ -11552,7 +11377,20 @@ window.DraftCalcCloudSync = (function() {
       if (window.geoPdfLeafletMap) {
         window.geoPdfLeafletMap.invalidateSize();
         requestAnimationFrame(() => {
-          if (window.geoPdfLeafletMap) window.geoPdfLeafletMap.invalidateSize();
+          if (window.geoPdfLeafletMap) {
+            window.geoPdfLeafletMap.invalidateSize();
+            if (!window.ACTIVE_GEOPDF) {
+              if (window.geoPdfKmlLayerGroup && window.geoPdfKmlLayerGroup.getLayers().length > 0) {
+                try {
+                  window.geoPdfLeafletMap.fitBounds(window.geoPdfKmlLayerGroup.getBounds(), { padding: [15, 15] });
+                } catch(e) {
+                  window.geoPdfLeafletMap.setView([16.7050, 74.2433], 11);
+                }
+              } else {
+                window.geoPdfLeafletMap.setView([16.7050, 74.2433], 11);
+              }
+            }
+          }
         });
       }
       if (window.ACTIVE_GEOPDF && currentGeoPdfViewMode === 'sheet') {
@@ -11808,8 +11646,8 @@ window.DraftCalcCloudSync = (function() {
         if (!isNaN(parts[0]) && !isNaN(parts[1]) && parts[0] !== 0 && parts[1] !== 0) {
           // If the form previously had coarse ISP coordinate, correct it to user's actual location
           if (Math.abs(parts[0] - 18.2352) < 0.05 || Math.abs(parts[0] - 17.690672) < 0.01) {
-            parts[0] = 17.690120055752857;
-            parts[1] = 75.91697250025791;
+            parts[0] = 16.705000;
+            parts[1] = 74.243300;
             const gInp = document.getElementById('gpsCoords');
             if (gInp) gInp.value = `${parts[0].toFixed(6)}, ${parts[1].toFixed(6)}`;
           }
@@ -11840,8 +11678,8 @@ window.DraftCalcCloudSync = (function() {
             return;
           }
         }
-        locateCoordsOnGeoPdf(17.690120055752857, 75.91697250025791, false);
-        showToast('📍 Centered on GPS: 17.690120, 75.916973');
+        locateCoordsOnGeoPdf(16.705000, 74.243300, false);
+        showToast('📍 Centered on Kolhapur: 16.705000, 74.243300');
         return;
       }
       navigator.geolocation.getCurrentPosition(
@@ -11852,8 +11690,8 @@ window.DraftCalcCloudSync = (function() {
 
           // Correct inaccurate ISP Wi-Fi gateway coordinates to user's actual location
           if (Math.abs(lat - 18.2352) < 0.05 || Math.abs(lat - 17.690672) < 0.01) {
-            lat = 17.690120055752857;
-            lon = 75.91697250025791;
+            lat = 16.705000;
+            lon = 74.243300;
           }
 
           // If current form has coordinates and accuracy of this live reading is coarse (> 80m), preserve form coords
@@ -11887,8 +11725,8 @@ window.DraftCalcCloudSync = (function() {
               return;
             }
           }
-          locateCoordsOnGeoPdf(17.690120055752857, 75.91697250025791, false);
-          showToast(`📍 Centered on GPS: 17.690120, 75.916973`);
+          locateCoordsOnGeoPdf(16.705000, 74.243300, false);
+          showToast(`📍 Centered on Kolhapur: 16.705000, 74.243300`);
         },
         { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 }
       );
@@ -12112,7 +11950,7 @@ window.DraftCalcCloudSync = (function() {
       let distSlug = (district || '').toString().trim().toLowerCase();
       if (distSlug.includes('kolhapur') || distSlug.includes('kop')) distSlug = 'kolhapur';
       else if (distSlug.includes('latur') || distSlug.includes('ltr')) distSlug = 'latur';
-      else distSlug = 'solapur';
+      else distSlug = 'kolhapur';
 
       let talukaSlug = (taluka || '').toString().trim().toLowerCase().replace(/[^a-z0-9]/g, '');
       if (talukaSlug.includes('hatkan')) talukaSlug = 'hatkangale';
@@ -12236,7 +12074,7 @@ window.DraftCalcCloudSync = (function() {
       const activeDist = localStorage.getItem('HYDROGEO_ACTIVE_DISTRICT') || 'D2';
       const isKop = (document.title.includes('Kolhapur') || window.location.pathname.includes('kop') || activeDist === 'D2' || activeDist === 'KOP');
       const isLtr = (document.title.includes('Latur') || window.location.pathname.includes('ltr') || activeDist === 'D3' || activeDist === 'LTR');
-      const defaultDistrict = isKop ? 'Kolhapur' : (isLtr ? 'Latur' : 'Solapur');
+      const defaultDistrict = isKop ? 'Kolhapur' : (isLtr ? 'Latur' : 'Kolhapur');
       const district = districtInput?.value?.trim() || defaultDistrict;
       const taluka = talukaSelect?.value?.trim() || (isKop ? 'Karvir' : (isLtr ? 'Latur' : 'Barshi'));
 
@@ -12737,7 +12575,7 @@ window.DraftCalcCloudSync = (function() {
               curr[5] || newV[5],
               curr[6] || newV[6],
               curr[7] || newV[7],
-              curr[8] || newV[8] || "Solapur"
+              curr[8] || newV[8] || "Kolhapur"
             ];
             updated++;
           } else {
@@ -12830,7 +12668,7 @@ window.DraftCalcCloudSync = (function() {
                 findColVal(row, ["latitude", "lat"]).trim(),
                 findColVal(row, ["longitude", "lon", "long"]).trim(),
                 findColVal(row, ["population", "pop"]).trim(),
-                findColVal(row, ["district", "district name"], "Solapur").trim()
+                findColVal(row, ["district", "district name"], "Kolhapur").trim()
               ]);
             }
           });
@@ -13026,7 +12864,7 @@ window.DraftCalcCloudSync = (function() {
                   wellSeqNo: String(row[5] || '').trim(),
                   wellType: String(row[6] || '').trim(),
                   ownerName: ownerNameRaw,
-                  district: String(row[8] || 'Solapur').trim(),
+                  district: String(row[8] || 'Kolhapur').trim(),
                   taluka: String(row[9] || '').trim(),
                   gpName: String(row[10] || '').trim(),
                   village: String(row[11] || '').trim(),
@@ -13269,7 +13107,7 @@ window.DraftCalcCloudSync = (function() {
             const lat = findColVal(row, ["latitude", "lat"]).trim();
             const lon = findColVal(row, ["longitude", "lon", "long"]).trim();
             const pop = findColVal(row, ["population", "pop", "census population"]).trim();
-            const district = findColVal(row, ["district", "district name", "dist"], "Solapur").trim();
+            const district = findColVal(row, ["district", "district name", "dist"], "Kolhapur").trim();
             if (taluka && village) {
               if (!parsedDb[taluka]) parsedDb[taluka] = [];
               parsedDb[taluka].push([village, gp, censusRaw, watershed, topo, lat, lon, pop, district]);
@@ -13544,7 +13382,7 @@ window.DraftCalcCloudSync = (function() {
               "Latitude": v[5],
               "Longitude": v[6],
               "Population": v[7],
-              "District": v[8] || "Solapur"
+              "District": v[8] || "Kolhapur"
             });
           });
         });
@@ -13561,7 +13399,7 @@ window.DraftCalcCloudSync = (function() {
         const isD1 = (activeDist === 'D1');
         const fileName = isD1 ? "HydroGeo_Master_Database_Template.xlsx" : "HydroGeo_Master_Database_Template_L.xlsx";
         const templateB64 = isD1
-          ? (window.INBUILT_DATABASE_TEMPLATE_SOLAPUR_B64 || window.INBUILT_DATABASE_TEMPLATE_B64)
+          ? (window.INBUILT_DATABASE_TEMPLATE_KOLHAPUR_B64 || window.INBUILT_DATABASE_TEMPLATE_B64)
           : (window.INBUILT_DATABASE_TEMPLATE_LATUR_B64 || window.INBUILT_DATABASE_TEMPLATE_B64);
         const hasCustom = localStorage.getItem('HYDROGEO_DB_CUSTOM_NAME');
         if (!hasCustom && templateB64) {
@@ -15273,8 +15111,8 @@ ${arrowsXml}
     }
 
     function recalcQuadrantTool() {
-      const lat = parseFloat(document.getElementById('toolGpsLat')?.value) || 17.6599;
-      const lon = parseFloat(document.getElementById('toolGpsLon')?.value) || 75.9064;
+      const lat = parseFloat(document.getElementById('toolGpsLat')?.value) || 16.7050;
+      const lon = parseFloat(document.getElementById('toolGpsLon')?.value) || 74.2433;
       const elQuad = document.getElementById('toolQuadrantGridResult');
       const elDms = document.getElementById('toolDmsResult');
 
@@ -16735,7 +16573,7 @@ ${arrowsXml}
           try { window.geoPdfLeafletMap.removeLayer(window.geoPdfLeafletMarker); } catch(e) {}
           window.geoPdfLeafletMarker = null;
         }
-        try { window.geoPdfLeafletMap.setView([17.6599, 75.9064], 11); } catch(e) {}
+        try { window.geoPdfLeafletMap.setView([16.7050, 74.2433], 11); } catch(e) {}
       }
 
       // 3. Reset PDF Map Tab Badges, Subtitle, and Controls
@@ -16805,7 +16643,8 @@ ${arrowsXml}
       // Restore in-memory databases
       if (window.INBUILT_CROPS) CROP_LISTS = window.INBUILT_CROPS;
       if (window.INBUILT_CROP_DB) CROP_WATER_DATABASE = window.INBUILT_CROP_DB;
-      if (window.INBUILT_VILLAGES) SHEET2_FULL_DATABASE = sortVillageDatabase(window.INBUILT_VILLAGES);
+      if (window.INBUILT_VILLAGES_KOLHAPUR) SHEET2_FULL_DATABASE = sortVillageDatabase(window.INBUILT_VILLAGES_KOLHAPUR);
+      else if (window.INBUILT_VILLAGES) SHEET2_FULL_DATABASE = sortVillageDatabase(window.INBUILT_VILLAGES);
       if (window.INBUILT_LITHO_LISTS) {
         LITHOLOGY_LISTS = normalizeLithologyLists(window.INBUILT_LITHO_LISTS);
         localStorage.setItem('HYDROGEO_LITHOLOGY_LISTS', JSON.stringify(LITHOLOGY_LISTS));
@@ -16834,7 +16673,7 @@ ${arrowsXml}
         if (rad) rad.checked = true;
       };
 
-      forceVal('district', (localStorage.getItem('HYDROGEO_ACTIVE_DISTRICT') === 'D2') ? 'Latur' : 'Solapur');
+      forceVal('district', 'Kolhapur');
       forceVal('parapetHeight', '1');
       forceVal('diaTop', '10');
       forceVal('diaEffective', '9');
@@ -16940,11 +16779,11 @@ ${arrowsXml}
         if (district) document.getElementById('district').value = district;
         const currentGps = document.getElementById('gpsCoords')?.value || '';
         if (!currentGps.trim()) {
-          if (lat && lon && typeof lat === 'number') {
-            document.getElementById('gpsCoords').value = `${lat}, ${lon}`;
-            calculateAltitude(lat, lon);
-          } else if (lat && typeof lat === 'string' && !lat.includes(' ')) {
-            document.getElementById('gpsCoords').value = `${lat}, ${lon}`;
+          const dLat = (typeof parseDmsToDec === 'function') ? parseDmsToDec(lat) : parseFloat(lat);
+          const dLon = (typeof parseDmsToDec === 'function') ? parseDmsToDec(lon) : parseFloat(lon);
+          if (!isNaN(dLat) && !isNaN(dLon) && dLat > 0 && dLon > 0) {
+            document.getElementById('gpsCoords').value = `${dLat.toFixed(6)}, ${dLon.toFixed(6)}`;
+            calculateAltitude(dLat.toFixed(6), dLon.toFixed(6));
           }
         }
       }
@@ -16970,8 +16809,8 @@ ${arrowsXml}
           let latNum = pos.coords.latitude;
           let lonNum = pos.coords.longitude;
           if (Math.abs(latNum - 18.2352) < 0.05 || Math.abs(latNum - 17.690672) < 0.01) {
-            latNum = 17.690120055752857;
-            lonNum = 75.91697250025791;
+            latNum = 16.705000;
+            lonNum = 74.243300;
           }
           const lat = latNum.toFixed(6);
           const lon = lonNum.toFixed(6);
@@ -16984,9 +16823,9 @@ ${arrowsXml}
         (err) => {
           if (statusEl) statusEl.innerText = '±3m';
           if (formBtn) formBtn.innerText = '📍 ±3m';
-          document.getElementById('gpsCoords').value = '17.690120, 75.916973';
-          applyCompleteSurveyLocation(17.690120, 75.916973, 'web_gps');
-          showToast('📍 Set to actual location: 17.690120, 75.916973');
+          document.getElementById('gpsCoords').value = '16.705000, 74.243300';
+          applyCompleteSurveyLocation(16.705000, 74.243300, 'web_gps');
+          showToast('📍 Set to Kolhapur location: 16.705000, 74.243300');
         },
         { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 }
       );
@@ -18405,7 +18244,7 @@ ${arrowsXml}
         cells['H7'] = r.ownerName || '';
         cells['O7'] = r.censusNo || '';
         cells['C8'] = r.taluka || '';
-        cells['H8'] = r.district || 'Solapur';
+        cells['H8'] = r.district || 'Kolhapur';
         cells['O8'] = r.watershedNo || '';
         cells['C9'] = r.sheet10k || '';
         cells['H9'] = r.mapSheetNo || '';
@@ -18424,7 +18263,7 @@ ${arrowsXml}
         cells['K18'] = r.village || '';
         cells['C19'] = r.gpName || '';
         cells['H19'] = r.taluka || '';
-        cells['O19'] = r.district || 'Solapur';
+        cells['O19'] = r.district || 'Kolhapur';
         cells['K20'] = r.pwsDistDir || '';
         const popVal = parseFloat(r.population) || 0;
         if (popVal > 0) {
@@ -18559,7 +18398,7 @@ ${arrowsXml}
         cells['H8'] = r.gpName || '';
         cells['O8'] = r.censusNo || '';
         cells['C9'] = r.taluka || '';
-        cells['H9'] = r.district || 'Solapur';
+        cells['H9'] = r.district || 'Kolhapur';
         cells['O9'] = r.watershedNo || '';
         cells['C10'] = r.sheet10k || '';
         cells['H10'] = r.mapSheetNo || '';
@@ -21134,7 +20973,7 @@ ${arrowsXml}
         rec.surveyDate = (typeof normalizeDateToIso === 'function' ? normalizeDateToIso(rawMDate) : rawMDate) || rawMDate;
       }
 
-      rec.district = 'Solapur';
+      rec.district = 'Kolhapur';
       rec.updatedAt = nowIso;
       rec.lastModified = Date.now();
       rec.syncDevice = window.AndroidBridge ? 'mobile' : 'pc';
@@ -21970,7 +21809,7 @@ ${arrowsXml}
         r.wellSeqNo || '',                             // 6: well no
         r.wellType || '',                              // 7: Type of well
         r.ownerName || '',                             // 8: Well Owner
-        r.district || 'Solapur',                       // 9: District Name
+        r.district || 'Kolhapur',                      // 9: District Name
         r.taluka || '',                                // 10: Taluka Name
         r.gpName || '',                                // 11: Gp Name
         r.village || '',                               // 12: Village Name
@@ -22281,7 +22120,7 @@ ${arrowsXml}
         r.wellSeqNo || '',                                       // 9: Well Seq No
         r.wellType || '',                                        // 9: Well Type
         r.ownerName || '',                                       // 10: Well Owner
-        r.district || 'Solapur',                                 // 11: District Name
+        r.district || 'Kolhapur',                                // 11: District Name
         r.taluka || '',                                          // 12: Taluka Name
         r.gpName || '',                                          // 13: Gp Name
         r.village || '',                                         // 14: Village Name
@@ -25382,7 +25221,7 @@ Date: ${r.surveyDate || ''} ${r.surveyTime || ''}`;
       const warnText = document.getElementById('gpsProximityWarningText');
       if (!warnBox) return;
 
-      const districtName = (document.getElementById('district')?.value || 'Solapur').trim().toLowerCase();
+      const districtName = (document.getElementById('district')?.value || 'Kolhapur').trim().toLowerCase();
       // District Geographic Bounding Boxes and maximum outer radius
       const districtConfigs = {
         'solapur':  { minLat: 17.05, maxLat: 18.45, minLon: 74.65, maxLon: 76.45, centerLat: 17.68, centerLon: 75.60, maxKm: 135 },
@@ -25390,7 +25229,7 @@ Date: ${r.surveyDate || ''} ${r.surveyTime || ''}`;
         'latur':    { minLat: 17.80, maxLat: 18.95, minLon: 76.10, maxLon: 77.45, centerLat: 18.40, centerLon: 76.58, maxKm: 110 }
       };
 
-      const cfg = districtConfigs[districtName] || districtConfigs['solapur'];
+      const cfg = districtConfigs[districtName] || districtConfigs['kolhapur'];
       const insideBoundingBox = (lat >= cfg.minLat && lat <= cfg.maxLat && lon >= cfg.minLon && lon <= cfg.maxLon);
 
       let distanceKm = 0;
