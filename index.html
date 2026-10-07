@@ -8,29 +8,44 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>GeoDraft Pro v3.2.9</title>
-  <link rel="icon" type="image/png" href="img/app_logo.png" />
-  <link rel="apple-touch-icon" href="img/app_logo.png" />
+  <link rel="icon" type="image/png" href="app_logo.png" onerror="this.onerror=null;this.href='img/app_logo.png';" />
+  <link rel="apple-touch-icon" href="app_logo.png" onerror="this.onerror=null;this.href='img/app_logo.png';" />
   
-  <!-- Inbuilt Databases and Master Template -->
-  <script src="js/inbuilt_data.js"></script>
-  <script src="js/gis_village_codes.js"></script>
-  <!-- SheetJS for reading Databases fast -->
-  <script src="js/xlsx.full.min.js"></script>
-  <!-- ExcelJS for perfect formatting retention during Template writing -->
-  <script src="js/exceljs.min.js"></script>
-  <!-- html2pdf for high-fidelity exact PDF export -->
-  <script src="js/html2pdf.bundle.min.js"></script>
-  <!-- Exact HTML templates for Irrigation and PWS technical forms -->
-  <script src="js/exact_templates.js?v=3.3.2"></script>
-  <!-- JSZip for opening and extracting KMZ archives -->
-  <script src="js/jszip.min.js"></script>
-  <!-- Leaflet for interactive map coordinates and boundary picker -->
-  <link rel="stylesheet" href="js/leaflet.css" />
-  <script src="js/leaflet.js"></script>
-  <!-- Real-Time Cloud Synchronization Engine (10-Digit Mobile Room) -->
-  <script src="js/crypto_e2ee.js"></script>
-  <script src="js/admin_telemetry.js"></script>
-  <script src="js/excel_hub_engine.js"></script>
+  <!-- Universal Dual-Path Asset Loader (Supports flat root GitHub Pages & APK js/ folder) -->
+  <link rel="stylesheet" href="leaflet.css" onerror="this.onerror=null;this.href='js/leaflet.css';" />
+  
+  <script src="inbuilt_data.js"></script>
+  <script>if (typeof window.INBUILT_VILLAGES_KOLHAPUR === 'undefined') document.write('<script src="js/inbuilt_data.js"><\/script>');</script>
+
+  <script src="gis_village_codes.js"></script>
+  <script>if (typeof window.getMahaGisCode === 'undefined') document.write('<script src="js/gis_village_codes.js"><\/script>');</script>
+
+  <script src="xlsx.full.min.js"></script>
+  <script>if (typeof XLSX === 'undefined') document.write('<script src="js/xlsx.full.min.js"><\/script>');</script>
+
+  <script src="exceljs.min.js"></script>
+  <script>if (typeof ExcelJS === 'undefined') document.write('<script src="js/exceljs.min.js"><\/script>');</script>
+
+  <script src="html2pdf.bundle.min.js"></script>
+  <script>if (typeof html2pdf === 'undefined') document.write('<script src="js/html2pdf.bundle.min.js"><\/script>');</script>
+
+  <script src="exact_templates.js?v=3.3.2"></script>
+  <script>if (typeof window.EXACT_TEMPLATES === 'undefined') document.write('<script src="js/exact_templates.js?v=3.3.2"><\/script>');</script>
+
+  <script src="jszip.min.js"></script>
+  <script>if (typeof JSZip === 'undefined') document.write('<script src="js/jszip.min.js"><\/script>');</script>
+
+  <script src="leaflet.js"></script>
+  <script>if (typeof L === 'undefined') document.write('<script src="js/leaflet.js"><\/script>');</script>
+
+  <script src="crypto_e2ee.js"></script>
+  <script>if (typeof window.CryptoE2EE === 'undefined') document.write('<script src="js/crypto_e2ee.js"><\/script>');</script>
+
+  <script src="admin_telemetry.js"></script>
+  <script>if (typeof window.AdminTelemetry === 'undefined') document.write('<script src="js/admin_telemetry.js"><\/script>');</script>
+
+  <script src="excel_hub_engine.js"></script>
+  <script>if (typeof window.UnifiedExcelHub === 'undefined') document.write('<script src="js/excel_hub_engine.js"><\/script>');</script>
   <!-- Inlined Real-Time Cloud Synchronization Engine -->
   <script>
 /**
@@ -925,7 +940,8 @@ window.DraftCalcCloudSync = (function() {
 
   </script>
   <!-- PDF.js for offline GeoPDF Map rendering and text extraction -->
-  <script src="js/pdf.min.js"></script>
+  <script src="pdf.min.js"></script>
+  <script>if (typeof pdfjsLib === 'undefined') document.write('<script src="js/pdf.min.js"><\/script>');</script>
   <script>
     // ==============================================================
     // INDEXEDDB ROBUST PHOTO & TILE STORAGE (Safe from 5MB Quota)
@@ -973,7 +989,7 @@ window.DraftCalcCloudSync = (function() {
     window.HydroGeoIndexedDB = HydroGeoIndexedDB;
     
     if (typeof pdfjsLib !== 'undefined') {
-      pdfjsLib.GlobalWorkerOptions.workerSrc = 'js/pdf.worker.min.js';
+      pdfjsLib.GlobalWorkerOptions.workerSrc = 'pdf.worker.min.js';
     }
   </script>
   
@@ -3965,7 +3981,7 @@ window.DraftCalcCloudSync = (function() {
 
   <header id="mainHeader">
     <div class="header-left">
-      <img src="img/app_logo.png" style="width:34px; height:34px; border-radius:50%; object-fit:cover; border:2px solid var(--primary); box-shadow: 0 2px 6px rgba(0,0,0,0.15);" alt="GeoDraft Pro Logo">
+      <img src="app_logo.png" onerror="this.onerror=null;this.src='img/app_logo.png';" style="width:34px; height:34px; border-radius:50%; object-fit:cover; border:2px solid var(--primary); box-shadow: 0 2px 6px rgba(0,0,0,0.15);" alt="GeoDraft Pro Logo">
     </div>
     <div class="header-center">
       <h1 style="font-size: 1.05rem; font-weight: 800; color: var(--text-main); margin: 0; display: flex; align-items: center; gap: 6px;">GeoDraft Pro <span style="font-size: 0.7rem; font-weight: 800; color: var(--primary); background: var(--primary-light); padding: 2px 6px; border-radius: 6px; border: 1px solid var(--primary);">v3.2.9</span></h1>
@@ -3996,7 +4012,7 @@ window.DraftCalcCloudSync = (function() {
             <span style="font-size: 0.72rem; color: var(--text-muted); font-weight: 700;" id="homeDateDisplay">Today</span>
           </div>
           <div style="display: flex; align-items: center; gap: 14px;">
-            <img src="img/app_logo.png" style="width: 54px; height: 54px; border-radius: 16px; object-fit: cover; border: 2.5px solid var(--primary); box-shadow: 0 4px 12px var(--primary-glow); flex-shrink: 0;" alt="GeoDraft Pro Logo" />
+            <img src="app_logo.png" onerror="this.onerror=null;this.src='img/app_logo.png';" style="width: 54px; height: 54px; border-radius: 16px; object-fit: cover; border: 2.5px solid var(--primary); box-shadow: 0 4px 12px var(--primary-glow); flex-shrink: 0;" alt="GeoDraft Pro Logo" />
             <div style="flex: 1;">
               <h3 id="displayGeoName" style="font-size: 1.1rem; font-weight: 900; color: var(--text-main); margin: 0 0 3px 0;">Geologist Profile</h3>
               <p id="displayGeoDesig" style="font-size: 0.78rem; color: var(--text-muted); font-weight: 700; margin: 0;">Groundwater Surveys</p>
@@ -6991,7 +7007,7 @@ window.DraftCalcCloudSync = (function() {
       <!-- Top Welcome Banner -->
       <div style="background: linear-gradient(135deg, var(--primary) 0%, #1d4ed8 100%); color: #fff; padding: 18px 16px; border-radius: 12px 12px 0 0; display: flex; align-items: center; justify-content: space-between; gap: 12px;">
         <div style="display: flex; align-items: center; gap: 12px;">
-          <img src="img/app_logo.png" style="width: 48px; height: 48px; border-radius: 50%; object-fit: cover; border: 2px solid #fff; box-shadow: 0 4px 12px rgba(0,0,0,0.25);" alt="App Logo" />
+          <img src="app_logo.png" onerror="this.onerror=null;this.src='img/app_logo.png';" style="width: 48px; height: 48px; border-radius: 50%; object-fit: cover; border: 2px solid #fff; box-shadow: 0 4px 12px rgba(0,0,0,0.25);" alt="App Logo" />
           <div style="text-align: left;">
             <h2 style="font-size: 1.12rem; font-weight: 900; margin: 0; color: #fff;">GeoDraft Pro v3.2.9</h2>
             <p style="font-size: 0.76rem; opacity: 0.95; margin: 2px 0 0 0; font-weight: 600;">First-Time Setup: Configure profile & storage</p>
@@ -11966,7 +11982,9 @@ window.DraftCalcCloudSync = (function() {
 
       if (!talukaData) {
         const pathsToTry = [
+          `${talukaSlug}.json`,
           `data/cadastral/${distSlug}/${talukaSlug}.json`,
+          `data/cadastral/kolhapur/${talukaSlug}.json`,
           `../data/cadastral/${distSlug}/${talukaSlug}.json`,
           `/data/cadastral/${distSlug}/${talukaSlug}.json`
         ];
